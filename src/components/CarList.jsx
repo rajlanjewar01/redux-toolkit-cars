@@ -26,7 +26,7 @@ function CarList() {
 	const { cars, name } = useSelector(memoizedCars);
 
 	const handleCarDelete = (car) => {
-		dispatch(removeCar);
+		dispatch(removeCar(car.id));
 	}
 
 	const renderedCars = cars.map((car) => {
