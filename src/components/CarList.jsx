@@ -3,25 +3,36 @@ import { createSelector } from "@reduxjs/toolkit";
 import { removeCar } from '../store';
 
 const memoizedCars = createSelector(
-  [(state) => state.cars.data, (state) => state.cars.searchTerms],
-  (data, searchTerm) =>
-    data.filter((car) =>
-      car.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  [
+    (state) => state.form.name,
+    (state) => state.cars.data,
+    (state) => state.cars.searchTerms
+  ],
+  (name, data, searchTerms) => {
+    const filteredCar = data.filter((car) =>
+      car.name?.toLowerCase().includes(searchTerms?.toLowerCase() || '')
+    );
+
+    return {
+      cars: filteredCar,
+      name
+    };
+  }
 );
 
 function CarList() {
 	const dispatch = useDispatch();
 
-	const cars = useSelector(memoizedCars);
+	const { cars, name } = useSelector(memoizedCars);
 
 	const handleCarDelete = (car) => {
 		dispatch(removeCar);
 	}
 
 	const renderedCars = cars.map((car) => {
+		const bold = name && car.name.toLowerCase().includes(name.toLowerCase());
 		return (
-			<div key={car.id} className='panel'>
+			<div key={car.id} className={`panel ${bold && 'bold'}`}>
 				<p>{car.name} - ${car.cost}</p>
 				<button 
 					className='button is-dange'
